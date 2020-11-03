@@ -160,7 +160,7 @@ bool I2CServo_SetDeadband(byte address, byte deadband, bool use_crc){
 }
 
 
-bool I2CServo_SetupAll(byte address, byte park_type, byte motor_polarity, byte multiturn_type, byte max_power, uint16_t max_speed, uint16_t ramp_time, byte ramp_curve, bool use_crc){
+bool I2CServo_Setup(byte address, byte park_type, byte motor_polarity, byte multiturn_type, byte max_power, uint16_t max_speed, uint16_t ramp_time, byte ramp_curve, bool use_crc){
 
  byte b[9];
  b[0] = park_type;

@@ -49,11 +49,11 @@ void setup(){
  
  //Alternatively, show data on small 0.93" i2c Oled display. 
  //This is an easier option for the Digispark board, and it also works with the others.
- OledSSD1306_Setup(1, 0, 0, 1, 0x7F, 0, 1, 0); //display on, clear screen, charge pump on
- OledSSD1306_PrintText("SERVO TEST", 64, 0, 1, 0, 1, 0, 0, 0);
- OledSSD1306_PrintText("Pos:      ",  0, 2, 0, 0, 1, 0, 0, 0);
- OledSSD1306_PrintText("Power:    ",  0, 4, 0, 0, 1, 0, 0, 0);
- OledSSD1306_PrintText("Temp:     ",  0, 6, 0, 0, 1, 0, 0, 0);
+ //OledSSD1306_Setup(1, 0, 0, 1, 0x7F, 0, 1, 0); //display on, clear screen, charge pump on
+ //OledSSD1306_PrintText("SERVO TEST", 64, 0, 1, 0, 1, 0, 0, 0);
+ //OledSSD1306_PrintText("Pos:      ",  0, 2, 0, 0, 1, 0, 0, 0);
+ //OledSSD1306_PrintText("Power:    ",  0, 4, 0, 0, 1, 0, 0, 0);
+ //OledSSD1306_PrintText("Temp:     ",  0, 6, 0, 0, 1, 0, 0, 0);
 
  //Servo
  I2CServo_Begin();
@@ -73,7 +73,7 @@ void loop(){
  //----------------------------------------
  //EXAMPLE #1
  //Read I2C address just to confirm communication. 
- /*
+ 
  result = I2CServo_GetI2cAddress(i2c_address, &data[0]);
  if(result==1){ 
   Serial.println("Responded Ok");
@@ -85,7 +85,7 @@ void loop(){
   Serial.println("Did not respond ");
   //OledSSD1306_PrintText("Did not respond ",  0, 2, 0, 0, 1, 0, 0, 0); 
  }
- */
+ 
  
  //----------------------------------------
  //EXAMPLE #2
@@ -129,19 +129,19 @@ void loop(){
  //User can set one item at a time or all simultaneously, see available functions.
  //I2CServo_SetParkType(i2c_address, 0); //0=coast, 1= brake, 2=hold with MAX_POWER setting, 3-100=hold with this number as power.
  //I2CServo_SetMaxPower(i2c_address, 50, 0); //0-100% cap
- I2CServo_SetDeadband(i2c_address, 2, 0);
- I2CServo_SetupAll(i2c_address, 100, 1, 0, 100, 3000, 1, 0, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
- delay(1);
+ //I2CServo_SetDeadband(i2c_address, 2, 0);
+ //I2CServo_Setup(i2c_address, 100, 1, 0, 100, 3000, 1, 0, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
+ //delay(1);
 
  //----------------------------------------
  //EXAMPLE #6
  //Simple motion, back and forth
  
- I2CServo_SetTargetPosition(i2c_address, 300, 0);
- delay(3000);
+ //I2CServo_SetTargetPosition(i2c_address, 300, 0);
+ //delay(3000);
  
- I2CServo_SetTargetPosition(i2c_address, 700, 0);
- delay(3000);
+ //I2CServo_SetTargetPosition(i2c_address, 700, 0);
+ //delay(3000);
  
 
  //----------------------------------------
