@@ -101,9 +101,9 @@ int main (int argc, char *argv[]){
 	
 	result = I2CServo_GetI2cAddress(i2c_address, &data[0]);
 	if(result==1){ 
-	Serial.println("Responded Ok\n");
-	Serial.println(data[0]);
-	Serial.println("\n");
+	printf("Responded Ok\n");
+	printf(data[0]);
+	printf("\n");
 	else{ 
 	printf("Did not respond\n");
 	MyDelay(1000); 	
