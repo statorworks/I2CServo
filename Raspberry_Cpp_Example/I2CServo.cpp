@@ -25,7 +25,7 @@
 #include "I2CServo.h"
 
 
-void I2CServo_Begin(){
+void I2CServo_Begin(void){
  //Nothing here, assumes i2c initialized by application
 }
 
@@ -33,7 +33,6 @@ void I2CServo_Begin(){
 bool I2CServo_GetI2cAddress(uint8_t address, uint8_t* readadd, bool use_crc){
 
  return I2C_SERVO_READ(address, I2CS_REG_ADDRESS, readadd, 1, use_crc);  //return 0 on failure
-
 }
 
 
@@ -152,7 +151,7 @@ bool i2cServo_GetCurrentState(uint8_t address, uint8_t* state, bool use_crc){
 }
 
 
-bool i2cServo_GetCurrentPosition(uint8_t address, int16_t* pos, bool use_crc) {
+bool i2cServo_GetCurrentPosition(uint8_t address, uint16_t* pos, bool use_crc) {
 
  if(pos==0){return 0;}
  
@@ -172,7 +171,9 @@ bool i2cServo_GetCurrentVelocity(uint8_t address, int16_t* vel, bool use_crc) {
  bool res = I2C_SERVO_READ(address, I2CS_REG_CURRENT_VELOCITY_H, &dat[0], 2, use_crc);
  if(res==0){return 0;}
  
- *vel = (int16_t)dat[0]<<8 | dat[1];
+ uint16_t val = (uint16_t)dat[0]<<8  | (uint16_t)dat[1];
+ *vel = val;
+ 
  return 1;//Ok
 }
 
@@ -198,7 +199,7 @@ bool i2cServo_GetLastcrc8(uint8_t address, uint8_t* lastcrc8, bool use_crc){
  return I2C_SERVO_READ(address, I2CS_REG_LAST_CRC8, lastcrc8, 1, use_crc);
 }
 
-bool i2cServo_GetAllStatus(uint8_t address, uint8_t* state, int16_t* pos, int16_t* vel, int8_t* power, uint8_t* temp, uint8_t* lastcrc8, bool use_crc){
+bool i2cServo_GetAllStatus(uint8_t address, uint8_t* state, uint16_t* pos, int16_t* vel, int8_t* power, uint8_t* temp, uint8_t* lastcrc8, bool use_crc){
  
  uint8_t dat[8];
  bool res = I2C_SERVO_READ(address, I2CS_REG_CURRENT_STATE, &dat[0], 8, use_crc);
@@ -206,10 +207,8 @@ bool i2cServo_GetAllStatus(uint8_t address, uint8_t* state, int16_t* pos, int16_
 
  //fill the ones the user has provided pointers to
  if(state!=0){ *state = dat[0];}
- //if(pos!=0)  { *pos = (int16_t)((uint16_t)dat[1]<<8 | dat[2]); }
- if(pos!=0)  { *pos = (int16_t)dat[1]<<8 | dat[2]; } 
- //if(vel!=0)  { *vel = (int16_t)((uint16_t)dat[3]<<8 | dat[4]); }
- if(vel!=0)  { *vel = (int16_t)dat[3]<<8 | dat[4]; }
+ if(pos!=0)  { *pos = (((uint16_t)dat[1])<<8) | dat[2]; } 
+ if(vel!=0)  { *vel = (int16_t)(((uint16_t)dat[3])<<8  | dat[4]); }
  if(power!=0){ *power = (int8_t)dat[5];}
  if(temp!=0) { *temp  = dat[6];}
  if(lastcrc8!=0){ *lastcrc8 = dat[7];}

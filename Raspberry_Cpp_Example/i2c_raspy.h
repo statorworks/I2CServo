@@ -2,7 +2,7 @@
 #define I2C_RASPY_H
 //
 //Statorworks 2020
-//Simple wrapper for Raspbian I2C. 
+//Simple wrapper for Raspbian I2C.
 /* 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@
 //sudo apt-get install libi2c-dev
 //sudo reboot
 //
-//if you don’t want to use I2C as an administrator –
+//if you don't want to use I2C as an administrator
 //give everyone read-write access to the devices:
 //sudo chmod o+rw /dev/i2c-*
 //
@@ -87,12 +87,12 @@
 #define  BSC_SIZE  0x20
 #define  BSC1_BASE  0x20804000
 #define  BSC_DIV_OFFSET   0x14
-uint32_t  *registers = NULL;
+extern uint32_t  *registers;
 #define  DIV  (registers [BSC_DIV_OFFSET / sizeof (*registers)])
 
 
-//detect process closure so servos stopped properly
-#include <signal>
+#define I2C_MIN_FREQ 1000
+#define I2C_MAX_FREQ 400000
 
 
 //optional print
@@ -106,17 +106,20 @@ extern bool I2C_initialized;
 
 extern struct i2c_msg i2c_msgs[2];
 extern struct i2c_rdwr_ioctl_data i2c_msgset;
-extern uint8_t i2c_obuff[10];
-extern uint8_t i2c_ibuff[10];
+extern uint8_t i2c_obuff[32];
+extern uint8_t i2c_ibuff[32];
 
-bool I2C_init();
-bool I2C_close();
+bool I2C_init(void);
+bool I2C_close(void);
 bool I2C_Read(uint8_t address, uint8_t reg, uint8_t* data, uint8_t len, bool use_crc);
 bool I2C_Write(uint8_t address, uint8_t reg, uint8_t* data, uint8_t len, bool use_crc);
 //
-bool  I2C_FreqSet(uint32_t f);
+bool I2C_FreqSet(uint32_t f);//UNTESTED
 bool I2C_IsInit(void);
 bool I2C_WasCrcOk(void);
 uint8_t I2C_GetLastCrc(void);
+//
+uint8_t I2C_crc_calculate(uint8_t address, uint8_t reg, uint8_t len, uint8_t* data);
+void I2C_crc8byte(uint8_t* crc_val, uint8_t val);
 
 #endif

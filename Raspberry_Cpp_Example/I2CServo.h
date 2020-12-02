@@ -68,7 +68,7 @@
 #define I2CS_REG_SAVE                   0x2A
 
 
-void I2CServo_Begin();
+void I2CServo_Begin(void);
 bool I2CServo_GetI2cAddress(uint8_t address, uint8_t* readadd, bool use_crc);
 bool I2CServo_SetI2cAddress(uint8_t address, uint8_t new_address, bool use_crc);
 bool I2CServo_Stop(uint8_t address, bool use_crc);
@@ -83,12 +83,12 @@ bool I2CServo_SetDeadband(uint8_t address, uint8_t deadband, bool use_crc);
 bool I2CServo_Setup(uint8_t address, uint8_t park_type, uint8_t motor_polarity, uint8_t multiturn_type, uint8_t max_power, uint16_t max_speed, uint16_t ramp_time, uint8_t ramp_curve, bool use_crc);
 //
 bool i2cServo_GetCurrentState(uint8_t address, uint8_t* state, bool use_crc);
-bool i2cServo_GetCurrentPosition(uint8_t address, int16_t* pos, bool use_crc);
+bool i2cServo_GetCurrentPosition(uint8_t address, uint16_t* pos, bool use_crc);
 bool i2cServo_GetCurrentVelocity(uint8_t address, int16_t* vel, bool use_crc);
 bool i2cServo_GetCurrentPower(uint8_t address, uint8_t* power, bool use_crc);
 bool i2cServo_GetCurrentTemp(uint8_t address, uint8_t* temp, bool use_crc);
 bool i2cServo_GetLastcrc8(uint8_t address, uint8_t* lastcrc8, bool use_crc);
-bool i2cServo_GetAllStatus(uint8_t address, uint8_t* state, int16_t* pos, int16_t* vel, int8_t* power, uint8_t* temp, uint8_t* lastcrc8, bool use_crc);
+bool i2cServo_GetAllStatus(uint8_t address, uint8_t* state, uint16_t* pos, int16_t* vel, int8_t* power, uint8_t* temp, uint8_t* lastcrc8, bool use_crc);
 //
 bool I2CServo_SetTargetPosition(uint8_t address, int16_t target_position, bool use_crc);
 bool I2CServo_SetNextTargetPosition(uint8_t address, int16_t next_position, bool use_crc);

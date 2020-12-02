@@ -71,14 +71,12 @@
 #include <fcntl.h>
 //
 #include "i2c_raspy.h"
-#include "i2cfreq.h"
 #include "I2CServo.h"
 
 void MyuSleep(uint32_t us);
 void MyDelay(uint32_t ms);
-volatile u_int32_t i;  
-byte data[16];  
-byte i2c_address = 0x00;
+uint8_t data[16];  
+uint8_t i2c_address = 0x58;
 bool result;
 
  
@@ -89,7 +87,7 @@ int main (int argc, char *argv[]){
   
   //I2C
   I2C_init();
-  MyuSleep(100000);
+  MyDelay(100);
 
   
   //Loop
@@ -99,16 +97,17 @@ int main (int argc, char *argv[]){
 	//EXAMPLE #1
 	//Read I2C address just to confirm communication. 
 	
-	result = I2CServo_GetI2cAddress(i2c_address, &data[0]);
+	result = I2CServo_GetI2cAddress(i2c_address, &data[0], 0);
 	if(result==1){ 
-	printf("Responded Ok\n");
-	printf(data[0]);
-	printf("\n");
-	else{ 
-	printf("Did not respond\n");
-	MyDelay(1000); 	
- 
- 
+	 printf("%d Responded Ok\n", data[0]);
+	 printf("\n");
+	}
+	else{
+	 printf("Did not respond\n");
+	}
+	MyDelay(1000); 
+	
+	
 	//----------------------------------------
 	//EXAMPLE #2
 	//Change i2c address. Change is immediate and address is saved to servo's non-volatile memory.
@@ -125,10 +124,9 @@ int main (int argc, char *argv[]){
 	//Scan i2c address space in case you forgot the servo's address.
 	//Make sure only one servo is on i2c bus
 	/*
-	for(byte i =0; i<=127;i++){
-		if(I2CServo_GetI2cAddress(i, &data[0])==1){
-			printf(i);
-			printf(" responded.\n");
+	for(uint8_t i =0; i<=127;i++){
+		if(I2CServo_GetI2cAddress(i, &data[0], 0)==1){
+			printf("%d, responded.\n", i);
 			break;
 		}
 	  }
@@ -147,22 +145,22 @@ int main (int argc, char *argv[]){
 	//EXAMPLE #5
 	//Set running parameter(s)
 	//User can set one item at a time or all simultaneously, see available functions.
-	//I2CServo_SetParkType(i2c_address, 0); //0=coast, 1= brake, 2=hold with MAX_POWER setting, 3-100=hold with this number as power.
+	//I2CServo_SetParkType(i2c_address, 2, 0); //0=coast, 1= brake, 2=hold with MAX_POWER setting, 3-100=hold with this number as power.
 	//I2CServo_SetMaxPower(i2c_address, 50, 0); //0-100% cap
-	//I2CServo_SetDeadband(i2c_address, 2, 0);
-	//I2CServo_Setup(i2c_address, 100, 1, 0, 100, 3000, 1, 0, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
-	//MyDelay(1);
+	//I2CServo_SetDeadband(i2c_address, 10, 0);
+	//I2CServo_Setup(i2c_address, 2, 1, 0, 100, 2000, 20, 0, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
+	//MyDelay(1); //<Let servo digest write
 
 	//----------------------------------------
 	//EXAMPLE #6
 	//Simple motion, back and forth
+	/*
+	I2CServo_SetTargetPosition(i2c_address, 300, 0);
+	MyDelay(1500);
  
-	//I2CServo_SetTargetPosition(i2c_address, 300, 0);
-	//MyDelay(3000);
- 
-	//I2CServo_SetTargetPosition(i2c_address, 700, 0);
-	//MyDelay(3000);
- 
+	I2CServo_SetTargetPosition(i2c_address, 700, 0);
+	MyDelay(1500);
+	*/
 
 	//----------------------------------------
 	//EXAMPLE #7
@@ -185,17 +183,17 @@ int main (int argc, char *argv[]){
 	//Servo free to rotate. Potentiometer fixed, or free rotating. Control speed only by power setting. ramp time slope is time to to 100%power in ms
 	//If there is a free-rotating pot, you can still consult its current position. 
 	/*
-	I2CServo_Setup(i2c_address, 1, 1, 2, 0, 0, 4000, 0, 0); //park_type, motor_polarity, multiturn_type(2), max_power, max_speed, ramp_time ms, ramp_curve, use_crc
+	I2CServo_Setup(i2c_address, 1, 1, 2, 0, 0, 2000, 0, 0); //park_type, motor_polarity, multiturn_type(2), max_power, max_speed, ramp_time ms, ramp_curve, use_crc
 	MyDelay(2);
 	//
 	I2CServo_SetMaxPower(i2c_address, 50, 0);
-	MyDelay(6000);
+	MyDelay(5000);
 	I2CServo_SetMaxPower(i2c_address, 0, 0);
-	MyDelay(6000); 
+	MyDelay(5000); 
 	I2CServo_SetMaxPower(i2c_address, -50, 0);
-	MyDelay(6000);
+	MyDelay(5000);
 	I2CServo_SetMaxPower(i2c_address, 0, 0);
-	MyDelay(6000);
+	MyDelay(5000);
 	*/
 
 	//----------------------------------------
@@ -203,20 +201,26 @@ int main (int argc, char *argv[]){
 	//Read status register(s)
 	//user can get one item at a time or all simultaneously, see available functions.
 	/*
-	byte state, temp, lastcrc8;
+	uint8_t state, temp, lastcrc8;
 	int8_t power;
-	int16_t pos, vel;
+	uint16_t pos;
+	int16_t vel;
 	//i2cServo_GetCurrentTemp(i2c_address, &temp, 0);
 	//i2cServo_GetCurrentPosition(i2c_address, &pos, 0);
+	//i2cServo_GetCurrentVelocity(i2c_address, &vel, 0);
 	i2cServo_GetAllStatus(i2c_address, &state, &pos, &vel, &power, &temp, &lastcrc8, 0);  //provide zero pointer for the items you don't want
 	// 
-	printf(pos);
-	printf(" ");
-	printf(power); 
-	printf(" ");
-	printf(temp);
+	printf("pos: %d\n", pos);
+	printf("vel: %d\n", vel); 
+	printf("pow: %d\n", power); 
+	printf("tmp: %d\n", temp);
+	printf("crc_ok: %d\n", I2C_crc_ok);
+	printf("\n");
 	//
-	MyDelay(100);
+    //NOTE: Sleeping for 50ms or more gets the RPiZero i2c reads out of sync, usually affecting the first bit of of the firs read byte.
+	//The current workaround is to follow with a regular block loop to wait until i2c fully wakes up on its own.
+	MyDelay(20);
+	//for(uint32_t j=0; j<10000000;j++){;}
 	*/
  
 	//----------------------------------------
@@ -234,14 +238,18 @@ int main (int argc, char *argv[]){
 	//I2CServo_SetProgramReps(i2c_address, 15, 0);      //255= infinite
 	//
 	//Or set up all at once:
-	//int16_t pp[8] = { 300, 700, 500, 0, 0, 0, 0, 0 };
-	//I2CServo_SetFullProgram(i2c_address, &pp[0], 1, 15, 1, 0);  //positions array, direction, reps, start, use crc
-	//MyDelay(1);
-
-	//I2CServo_SaveAll(i2c_address, 0);
-	//MyDelay(5);
+	/*
+	int16_t pp[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	I2CServo_SetFullProgram(i2c_address, &pp[0], 0, 0);  //address, positions array, reps, use crc
+	MyDelay(2);//<let servo digest write
+	//
+	I2CServo_SaveAll(i2c_address, 0);
+	MyDelay(5);//<Let servo write internal flash
+	//
+	MyDelay(50000);
+	*/
  
-	//Options to stop the running program (choose one):
+ 	//Options to stop the running program (choose one):
 	//I2CServo_SetProgramReps(i2c_address, 0, 0);           //reps=0,1,2 etc: reduce the number of reps left
 	//I2CServo_SetNextTargetPosition(i2c_address, 800, 0);  //program ends at completion of current move and servo goes to new defined position 
 	//I2CServo_SetTargetPosition(i2c_address, 800, 0);      //program ends right away and servo ramps towards new defined position 
@@ -262,31 +270,36 @@ int main (int argc, char *argv[]){
 	//EXAMPLE #12
 	//Read and write with crc-8 checksum. 
 	//Smbus-type crc8 (0x07 polynomial) on the i2c packets adds robustness and safety to implementation.
-	//The I2C wrapper implementation in this project acommodates for this, making things much simpler.
-	//Crc8 success can be checked with the I2CWrapper_WasCrcOk() function, and if failed, you can decide to retry or do something else.
+	//
 	/*
 	//Read
-	byte power;
-	i2cServo_GetCurrentPosition(i2c_address, &power, 1);
-	if(I2CWrapper_WasCrcOk()==1){  Serial.print("Crc Ok\n"); }
-	else{ Serial.print("Crc  failed\n"); }
+	uint16_t pos;
+	i2cServo_GetCurrentPosition(i2c_address, &pos, 1);
+	printf("Read position: %d\n", pos);
+	printf("crc_ok: %d\n", I2C_crc_ok);
+	printf("\n");
 	MyDelay(1000);
-  
+    */
+    /*    
 	//Write, if checksum fails, servo discards the whole write transaction.
 	I2CServo_SetMaxPower(i2c_address, 75, 1); 
+	uint8_t crc_sent = I2C_LastCrc;
+	printf("Calc_crc: %d\n", crc_sent);//print this here, not below or the value will be wrong
+	MyDelay(2);
 	//
 	//The servo stores the last succesful write crc, so you can consult that to double check.
-	byte last_crc;
-	i2cServo_GetLastcrc8(i2c_address, &last_crc, 1);//Note that this itself is done using crc for integrity. 
-	Serial.print(last_crc);
-	//MyDelay(1000);
+	uint8_t last_crc;
+	i2cServo_GetLastcrc8(i2c_address, &last_crc, 1);//Note this read can itself be done using crc for integrity. 
+	//printf("Calc_crc: %d\n", crc_sent);
+	printf("Servo last write crc: %d\n", last_crc);
+	printf("\n");
+	MyDelay(1000);
 	*/
-      
   }//loop
   
   //Don't forget to park and turn servo(s) off on program exit 
-  //for(i=0;i<5;i++){ I2CServo_Stop(servo_ids[i], 0); }
-  //for(i=0;i<5;i++){ I2CServo_Setup(servo_ids[i], 1, 1, 0, 0, 0, 0, 0, 0); }
+  //for(uint8_t i=0;i<5;i++){ I2CServo_Stop(servo_ids[i], 0); }
+  //for(uint8_t i=0;i<5;i++){ I2CServo_Setup(servo_ids[i], 1, 1, 0, 0, 0, 0, 0, 0); }
   
   MyuSleep(5000);
   I2C_close();
@@ -295,15 +308,13 @@ int main (int argc, char *argv[]){
 
 
 void MyDelay(uint32_t ms){
+ //NOTE: Sleeping for 50ms or more gets the i2c reads out of sync, usually affecting the first bit of of the firs read byte.
  MyuSleep(ms * 1000);
 }
 
 void MyuSleep(uint32_t us){
  
  usleep(us); 
- //for usleep over 100ms on Raspbian, need some additional time to wake up before next i2c read. Otherwise i2c timing/data is incorrect.
- usleep(50); 
- //for(i=0;i<200000;i++){ i=i; } 	
 }
 
 
