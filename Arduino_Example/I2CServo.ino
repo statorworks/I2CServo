@@ -64,10 +64,15 @@ void I2CServo_Begin(){
 }
 
 
+bool I2CServo_GetFirmwareVersion(byte address, byte* read_version, bool use_crc){
+
+ return I2CWrapper_Read(address, I2CS_REG_FIRMWARE_VERSION, read_version, 1, use_crc);  //return 0 on failure
+}
+
+
 bool I2CServo_GetI2cAddress(byte address, byte* readadd, bool use_crc){
 
  return I2CWrapper_Read(address, I2CS_REG_ADDRESS, readadd, 1, use_crc);  //return 0 on failure
-
 }
 
 
@@ -243,7 +248,8 @@ bool i2cServo_GetAllStatus(byte address, byte* state, int16_t* pos, int16_t* vel
  //if(pos!=0)  { *pos = (int16_t)((uint16_t)dat[1]<<8 | dat[2]); }
  if(pos!=0)  { *pos = (int16_t)dat[1]<<8 | dat[2]; } 
  //if(vel!=0)  { *vel = (int16_t)((uint16_t)dat[3]<<8 | dat[4]); }
- if(vel!=0)  { *vel = (int16_t)dat[3]<<8 | dat[4]; }
+ //if(vel!=0)  { *vel = (int16_t)dat[3]<<8 | dat[4]; }
+ if(vel!=0)  { *vel = (int16_t)((uint16_t)dat[3]<<8 | dat[4]); }
  if(power!=0){ *power = (int8_t)dat[5];}
  if(temp!=0) { *temp  = dat[6];}
  if(lastcrc8!=0){ *lastcrc8 = dat[7];}

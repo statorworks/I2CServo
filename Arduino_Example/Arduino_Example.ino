@@ -29,7 +29,7 @@
 
 #define LED_PIN 13
 byte data[16];  
-byte i2c_address = 0x00; //modify address as needed here. servo default is 0x00
+byte i2c_address = 0x58; //modify address as needed here. servo default is 0x00
 bool result;
 
 byte count=0;
@@ -74,7 +74,7 @@ void loop(){
  //EXAMPLE #1
  //Read I2C address just to confirm communication. 
  
- result = I2CServo_GetI2cAddress(i2c_address, &data[0]);
+ result = I2CServo_GetI2cAddress(i2c_address, &data[0],0);
  if(result==1){ 
   Serial.println("Responded Ok");
   Serial.println(data[0]);
@@ -85,6 +85,7 @@ void loop(){
   Serial.println("Did not respond ");
   //OledSSD1306_PrintText("Did not respond ",  0, 2, 0, 0, 1, 0, 0, 0); 
  }
+ delay(1000);
  
  
  //----------------------------------------
@@ -93,8 +94,8 @@ void loop(){
  //Further access needs to be to the new address.
  //Make sure only one servo is on i2c bus
  /*
-  I2CServo_SetI2cAddress(i2c_address, 0x25,0);  //0-127
-  i2c_address = 0x25;
+  I2CServo_SetI2cAddress(0, 0x58,0);  //0-127
+  i2c_address = 0x58;
   delay(1000); 
  */
  
@@ -104,11 +105,11 @@ void loop(){
  //Make sure only one servo is on i2c bus
  /*
  for(byte i =0; i<=127;i++){
-   if(I2CServo_GetI2cAddress(i, &data[0])==1){
+   if(I2CServo_GetI2cAddress(i, &data[0], 0)==1){
      Serial.print(i);
      Serial.print(" responded.\n");
-     OledSSD1306_PrintValue(i, 0, 2, 0, 0, 1, 0, 0, 0, 3, 2);
-     OledSSD1306_PrintText(" responded.      ",  24, 2, 0, 0, 1, 0, 0, 0); 
+     //OledSSD1306_PrintValue(i, 0, 2, 0, 0, 1, 0, 0, 0, 3, 2);
+     //OledSSD1306_PrintText(" responded.      ",  24, 2, 0, 0, 1, 0, 0, 0); 
      break;
    }
   }
@@ -119,7 +120,7 @@ void loop(){
  //EXAMPLE #4
  //Stop motion immediately in current position without ramping, and enter park state.
  /*
- I2CServo_Stop(i2c_address);
+ I2CServo_Stop(i2c_address,0);
  delay(1000);
  */
  
@@ -129,20 +130,20 @@ void loop(){
  //User can set one item at a time or all simultaneously, see available functions.
  //I2CServo_SetParkType(i2c_address, 0); //0=coast, 1= brake, 2=hold with MAX_POWER setting, 3-100=hold with this number as power.
  //I2CServo_SetMaxPower(i2c_address, 50, 0); //0-100% cap
- //I2CServo_SetDeadband(i2c_address, 2, 0);
- //I2CServo_Setup(i2c_address, 100, 1, 0, 100, 3000, 1, 0, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
+ //I2CServo_SetDeadband(i2c_address, 12, 0);
+ //I2CServo_Setup(i2c_address, 2, 1, 0, 100, 1200, 1000, 80, 0); //address, park_type, motor_polarity, continuous_rotation, max_power, max_speed, ramp_time ms, ramp_curve, use_crc
  //delay(1);
 
  //----------------------------------------
  //EXAMPLE #6
  //Simple motion, back and forth
+ /*
+ I2CServo_SetTargetPosition(i2c_address, 200, 0);
+ delay(1000);
  
- //I2CServo_SetTargetPosition(i2c_address, 300, 0);
- //delay(3000);
- 
- //I2CServo_SetTargetPosition(i2c_address, 700, 0);
- //delay(3000);
- 
+ I2CServo_SetTargetPosition(i2c_address, 900, 0);
+ delay(1000);
+ */
 
  //----------------------------------------
  //EXAMPLE #7
@@ -165,17 +166,17 @@ void loop(){
  //Servo free to rotate. Potentiometer fixed, or free rotating. Control speed only by power setting. ramp time slope is time to to 100%power in ms
  //If there is a free-rotating pot, you can still consult it's current position. 
  /*
- I2CServo_SetupAll(i2c_address, 1, 1, 2, 0, 0, 4000, 0, 0); //park_type, motor_polarity, multiturn_type(2), max_power, max_speed, ramp_time ms, ramp_curve, use_crc
+ I2CServo_Setup(i2c_address, 1, 1, 2, 0, 0, 2000, 0, 0); //park_type, motor_polarity, multiturn_type(2), max_power, max_speed, ramp_time ms, ramp_curve, use_crc
  delay(2);
  //
  I2CServo_SetMaxPower(i2c_address, 50, 0);
- delay(6000);
+ delay(5000);
  I2CServo_SetMaxPower(i2c_address, 0, 0);
- delay(6000); 
+ delay(5000); 
  I2CServo_SetMaxPower(i2c_address, -50, 0);
- delay(6000);
+ delay(5000);
  I2CServo_SetMaxPower(i2c_address, 0, 0);
- delay(6000);
+ delay(5000);
  */
 
  //----------------------------------------
@@ -183,27 +184,28 @@ void loop(){
  //Read status register(s)
  //user can get one item at a time or all simultaneously, see available functions.
  //You can move the servo by hand and observe the line on the serial plotter graph, or the value on the Oled display. 
- /*
+ 
  byte state, temp, lastcrc8;
  int8_t power;
  int16_t pos, vel;
+ //i2c_address = 0x00;
  //i2cServo_GetCurrentTemp(i2c_address, &temp, 0);
  //i2cServo_GetCurrentPosition(i2c_address, &pos, 0);
- i2cServo_GetAllStatus(i2c_address, &state, &pos, &vel, &power, &temp, &lastcrc8, 0);  //provide zero pointer for the items you don't want
+ //i2cServo_GetAllStatus(i2c_address, &state, &pos, &vel, &power, &temp, &lastcrc8, 0);  //provide zero pointer for the items you don't want
  // 
- Serial.print(pos);
- Serial.print(" ");
- Serial.print(power); 
- Serial.print(" ");
- Serial.println(temp);//println=print these on IDE serial plotter
+ //Serial.print(pos);
+ //Serial.print(" ");
+ //Serial.print(vel); 
+ //Serial.print(" ");
+ //Serial.println(temp);//println=print these on IDE serial plotter
  //
  //values on the oled screen right side
- OledSSD1306_PrintValue(pos,   127, 2, 2, 0, 1, 0, 0, 0, 5, 1);
- OledSSD1306_PrintValue(power, 127, 4, 2, 0, 1, 0, 0, 0, 5, 1);
- OledSSD1306_PrintValue(temp,  127, 6, 2, 0, 1, 0, 0, 0, 5, 1);
+ //OledSSD1306_PrintValue(pos,   127, 2, 2, 0, 1, 0, 0, 0, 5, 1);
+ //OledSSD1306_PrintValue(power, 127, 4, 2, 0, 1, 0, 0, 0, 5, 1);
+ //OledSSD1306_PrintValue(temp,  127, 6, 2, 0, 1, 0, 0, 0, 5, 1);
  //
- delay(100);
- */
+ //delay(100);
+ 
  
  //----------------------------------------
  //EXAMPLE #10
@@ -221,11 +223,11 @@ void loop(){
  //
  //Or set up all at once:
  //int16_t pp[8] = { 300, 700, 500, 0, 0, 0, 0, 0 };
- //I2CServo_SetFullProgram(i2c_address, &pp[0], 1, 15, 1, 0);  //positions array, direction, reps, start, use crc
+ //I2CServo_SetFullProgram(i2c_address, &pp[0], 5, 0);  //address, positions array, reps, use crc
  //delay(1);
 
  //I2CServo_SaveAll(i2c_address, 0);
- //delay(5);
+ //delay(50000);
  
  //Options to stop the running program (choose one):
  //I2CServo_SetProgramReps(i2c_address, 0, 0);           //reps=0,1,2 etc: reduce the number of reps left
@@ -263,7 +265,7 @@ void loop(){
  //
  //The servo stores the last succesful write crc, so you can consult that to double check.
  byte last_crc;
- i2cServo_GetLastcrc8(i2c_address, &last_crc, 1);//Note that this itself is done using crc for integrity. 
+ i2cServo_GetLastcrc8(i2c_address, &last_crc, 1);//Note this read can itself be done using crc for integrity. 
  Serial.print(last_crc);
  //delay(1000);
  */
