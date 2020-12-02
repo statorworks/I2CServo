@@ -1,6 +1,6 @@
 12/01/20 
 Restested and adjusted Arduino examples
-Fully tested and adjusted raspberry C++ example. Previous upload was pretty much a sketch.
+Fully tested and adjusted Raspberry Pi C++ examples, including crc8 feature. Previous upload was pretty much a sketch.
 
 
 Hello everyone, these are the examples for the I2C servo board.
