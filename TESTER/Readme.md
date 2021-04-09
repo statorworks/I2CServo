@@ -1,4 +1,4 @@
-Here you can find the files to have the servo tester PCB made, as well as the source code if you want to repurpose the board.
+Here you can find the files to have the servo tester PCB made, as well as the source code if you want to improve or repurpose the board.
 
 BOM:
 
