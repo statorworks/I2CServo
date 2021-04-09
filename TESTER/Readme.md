@@ -2,7 +2,7 @@ Here you can find the files to have the servo tester PCB made, as well as the so
 
 To power the board, provide 5-9v (5-6.5v recommended) on the XH connector.
 
-Left hand pot controls power and and ramp time (although they can be controlled independently on actual application)
+Left hand pot controls power and ramp time (although they can be controlled independently on actual application)
 
 Right hand pot controls position. Note that range might go past mechanical range of your particular servo, test carefully.
 
