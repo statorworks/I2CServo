@@ -9,4 +9,4 @@ CURRENT_VELOCITY register on Version 1 returns the wrong value. Version 2 has th
 Hello everyone, these are the application examples for the I2C servo board.
 Please also see the full manual pdf here, it goes into full detail, beyond what's covered in the introductory flier. 
 
-Thaks for your support!
+Thanks for your support!
